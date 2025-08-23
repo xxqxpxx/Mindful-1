@@ -1,0 +1,306 @@
+/*
+ * Adapted from Mindful (https://github.com/akaMrNagar/Mindful)
+ * Original Author: Pawan Nagar (https://github.com/akaMrNagar)
+ * 
+ * Licensed under GPL-2.0 license
+ * Adapted for AwayTime digital wellness app
+ */
+package com.awaytime.app.service
+
+import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.util.Log
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import com.awaytime.app.models.AppCategory
+import com.awaytime.app.models.AppFilterCriteria
+import com.awaytime.app.models.AppLoadingState
+import com.awaytime.app.models.AppResult
+import com.awaytime.app.models.AppSortBy
+import com.awaytime.app.models.InstalledApp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.withContext
+import java.util.concurrent.ConcurrentHashMap
+
+/**
+ * Robust app manager adapted from Mindful's implementation.
+ * Handles app loading with proper error handling, caching, and performance optimization.
+ */
+class MindfulAppManager private constructor(private val context: Context) {
+    
+    companion object {
+        private const val TAG = "MindfulAppManager"
+        private const val ICON_SIZE = 128 // dp
+        
+        @Volatile
+        private var INSTANCE: MindfulAppManager? = null
+        
+        fun getInstance(context: Context): MindfulAppManager {
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: MindfulAppManager(context.applicationContext).also { INSTANCE = it }
+            }
+        }
+    }
+    
+    private val packageManager = context.packageManager
+    
+    // State management
+    private val _loadingState = MutableStateFlow<AppLoadingState>(AppLoadingState.Idle)
+    val loadingState: StateFlow<AppLoadingState> = _loadingState.asStateFlow()
+    
+    // Cache for apps and icons
+    private val appCache = ConcurrentHashMap<String, InstalledApp>()
+    private val iconCache = ConcurrentHashMap<String, ImageBitmap>()
+    private var lastLoadTime = 0L
+    private val cacheValidityMs = 5 * 60 * 1000L // 5 minutes
+    
+    /**
+     * Loads all installed apps with proper error handling and caching
+     */
+    suspend fun loadInstalledApps(forceRefresh: Boolean = false): AppResult<List<InstalledApp>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                _loadingState.value = AppLoadingState.Loading
+                
+                // Check cache validity
+                val currentTime = System.currentTimeMillis()
+                if (!forceRefresh && 
+                    appCache.isNotEmpty() && 
+                    (currentTime - lastLoadTime) < cacheValidityMs) {
+                    
+                    val cachedApps = appCache.values.toList()
+                    _loadingState.value = AppLoadingState.Success(cachedApps)
+                    return@withContext AppResult.Success(cachedApps)
+                }
+                
+                Log.d(TAG, "Loading installed applications...")
+                
+                // Get installed packages with proper flags
+                val packages = try {
+                    packageManager.getInstalledApplications(
+                        PackageManager.GET_META_DATA or PackageManager.MATCH_UNINSTALLED_PACKAGES
+                    )
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to get installed applications", e)
+                    _loadingState.value = AppLoadingState.Error("Failed to load applications: ${e.message}")
+                    return@withContext AppResult.Error(e)
+                }
+                
+                Log.d(TAG, "Found ${packages.size} installed packages")
+                
+                val installedApps = mutableListOf<InstalledApp>()
+                var processedCount = 0
+                
+                packages.forEach { applicationInfo ->
+                    try {
+                        // Skip if package is not enabled (unless it's a system app we want to show)
+                        if (!applicationInfo.enabled && !shouldIncludeDisabledApp(applicationInfo)) {
+                            return@forEach
+                        }
+                        
+                        val app = createInstalledAppFromInfo(applicationInfo)
+                        installedApps.add(app)
+                        appCache[app.packageName] = app
+                        
+                        processedCount++
+                        
+                        // Update loading state periodically for better UX
+                        if (processedCount % 50 == 0) {
+                            _loadingState.value = AppLoadingState.Loading
+                        }
+                        
+                    } catch (e: Exception) {
+                        Log.w(TAG, "Failed to process app: ${applicationInfo.packageName}", e)
+                        // Continue processing other apps instead of failing completely
+                    }
+                }
+                
+                // Sort apps by name for better UX
+                val sortedApps = installedApps.sortedBy { it.appName.lowercase() }
+                
+                // Update cache and timestamp
+                lastLoadTime = currentTime
+                
+                Log.d(TAG, "Successfully loaded ${sortedApps.size} applications")
+                _loadingState.value = AppLoadingState.Success(sortedApps)
+                
+                AppResult.Success(sortedApps)
+                
+            } catch (e: Exception) {
+                Log.e(TAG, "Unexpected error loading apps", e)
+                val errorMessage = "Failed to load applications: ${e.message}"
+                _loadingState.value = AppLoadingState.Error(errorMessage, e)
+                AppResult.Error(e)
+            }
+        }
+    }
+    
+    /**
+     * Filters and searches apps based on criteria
+     */
+    fun filterApps(
+        apps: List<InstalledApp>,
+        criteria: AppFilterCriteria
+    ): List<InstalledApp> {
+        return apps.filter { app ->
+            // Search query filter
+            if (criteria.searchQuery.isNotBlank() && !app.matchesSearch(criteria.searchQuery)) {
+                return@filter false
+            }
+            
+            // Category filter
+            if (criteria.category != null && AppCategory.fromPackageName(app.packageName) != criteria.category) {
+                return@filter false
+            }
+            
+            // System app filter
+            if (!criteria.showSystemApps && app.isSystemApp) {
+                return@filter false
+            }
+            
+            // Popular apps filter
+            if (criteria.showPopularOnly && !app.isPopularApp()) {
+                return@filter false
+            }
+            
+            true
+        }.let { filteredApps ->
+            // Apply sorting
+            when (criteria.sortBy) {
+                AppSortBy.NAME -> filteredApps.sortedBy { it.appName.lowercase() }
+                AppSortBy.PACKAGE_NAME -> filteredApps.sortedBy { it.packageName.lowercase() }
+                AppSortBy.INSTALL_TIME -> filteredApps.sortedByDescending { it.installTime }
+                AppSortBy.UPDATE_TIME -> filteredApps.sortedByDescending { it.lastUpdateTime }
+                AppSortBy.SIZE -> filteredApps.sortedBy { it.appName.lowercase() } // Size not available, fallback to name
+            }
+        }
+    }
+    
+    /**
+     * Gets popular apps that are commonly blocked
+     */
+    fun getPopularApps(allApps: List<InstalledApp>): List<InstalledApp> {
+        return allApps.filter { it.isPopularApp() }
+            .sortedBy { it.appName.lowercase() }
+    }
+    
+    /**
+     * Loads app icon with caching and error handling
+     */
+    suspend fun loadAppIcon(packageName: String): ImageBitmap? {
+        return withContext(Dispatchers.IO) {
+            try {
+                // Check cache first
+                iconCache[packageName]?.let { return@withContext it }
+                
+                val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
+                val drawable = packageManager.getApplicationIcon(applicationInfo)
+                
+                val bitmap = drawableToBitmap(drawable)
+                val imageBitmap = bitmap.asImageBitmap()
+                
+                // Cache the result
+                iconCache[packageName] = imageBitmap
+                
+                imageBitmap
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to load icon for $packageName", e)
+                null
+            }
+        }
+    }
+    
+    /**
+     * Clears the app cache
+     */
+    fun clearCache() {
+        appCache.clear()
+        iconCache.clear()
+        lastLoadTime = 0L
+        _loadingState.value = AppLoadingState.Idle
+    }
+    
+    /**
+     * Gets cached apps without triggering a reload
+     */
+    fun getCachedApps(): List<InstalledApp> {
+        return appCache.values.toList()
+    }
+    
+    private fun createInstalledAppFromInfo(applicationInfo: ApplicationInfo): InstalledApp {
+        val packageInfo = try {
+            packageManager.getPackageInfo(applicationInfo.packageName, 0)
+        } catch (e: Exception) {
+            null
+        }
+        
+        val appName = try {
+            packageManager.getApplicationLabel(applicationInfo).toString()
+        } catch (e: Exception) {
+            applicationInfo.packageName
+        }
+        
+        // Load icon synchronously for better performance in list
+        val drawable = try {
+            packageManager.getApplicationIcon(applicationInfo)
+        } catch (e: Exception) {
+            null
+        }
+        
+        val iconBitmap = drawable?.let { 
+            try {
+                drawableToBitmap(it).asImageBitmap()
+            } catch (e: Exception) {
+                null
+            }
+        }
+        
+        return InstalledApp(
+            appName = appName,
+            packageName = applicationInfo.packageName,
+            icon = drawable,
+            iconBitmap = iconBitmap,
+            isSystemApp = (applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0,
+            versionName = packageInfo?.versionName ?: "",
+            versionCode = packageInfo?.longVersionCode ?: 0L,
+            installTime = packageInfo?.firstInstallTime ?: 0L,
+            lastUpdateTime = packageInfo?.lastUpdateTime ?: 0L,
+            targetSdk = applicationInfo.targetSdkVersion,
+            isEnabled = applicationInfo.enabled,
+            dataDir = applicationInfo.dataDir,
+            publicSourceDir = applicationInfo.publicSourceDir,
+            uid = applicationInfo.uid
+        )
+    }
+    
+    private fun shouldIncludeDisabledApp(applicationInfo: ApplicationInfo): Boolean {
+        // Include popular apps even if disabled
+        return applicationInfo.packageName in InstalledApp.POPULAR_APPS_SET
+    }
+    
+    private fun drawableToBitmap(drawable: Drawable): Bitmap {
+        if (drawable is BitmapDrawable && drawable.bitmap != null) {
+            return drawable.bitmap
+        }
+        
+        val bitmap = Bitmap.createBitmap(
+            ICON_SIZE,
+            ICON_SIZE,
+            Bitmap.Config.ARGB_8888
+        )
+        
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+        
+        return bitmap
+    }
+}

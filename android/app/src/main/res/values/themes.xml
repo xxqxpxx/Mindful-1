@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Awaytime App Theme -->
+    <style name="Theme.Awaytime" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color (Awaytime Purple) -->
+        <item name="colorPrimary">@color/awaytime_purple</item>
+        <item name="colorPrimaryDark">@color/awaytime_dark_purple</item>
+        <item name="colorPrimaryVariant">@color/awaytime_light_purple</item>
+        
+        <!-- Secondary colors -->
+        <item name="colorSecondary">@color/awaytime_light_purple</item>
+        <item name="colorSecondaryVariant">@color/awaytime_dark_purple</item>
+        
+        <!-- Background colors -->
+        <item name="android:colorBackground">@color/awaytime_background</item>
+        <item name="colorSurface">@color/white</item>
+        
+        <!-- Error colors -->
+        <item name="colorError">@color/awaytime_error</item>
+        
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@color/awaytime_purple</item>
+        <item name="android:windowLightStatusBar">false</item>
+        
+        <!-- Navigation bar -->
+        <item name="android:navigationBarColor">@color/awaytime_background</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        
+        <!-- Window background -->
+        <item name="android:windowBackground">@color/awaytime_background</item>
+        
+        <!-- Text colors -->
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:textColorSecondary">@color/gray_600</item>
+    </style>
+
+    <!-- Splash Screen Theme -->
+    <style name="Theme.Awaytime.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/awaytime_background</item>
+        <item name="android:statusBarColor">@color/awaytime_purple</item>
+    </style>
+
+    <!-- Dialog Theme -->
+    <style name="Theme.Awaytime.Dialog" parent="ThemeOverlay.MaterialComponents.Dialog">
+        <item name="colorPrimary">@color/awaytime_purple</item>
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+
+    <!-- Bottom Sheet Theme -->
+    <style name="Theme.Awaytime.BottomSheet" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="colorPrimary">@color/awaytime_purple</item>
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+</resources>

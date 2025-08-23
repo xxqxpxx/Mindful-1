@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<device-admin xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-policies>
+        <!-- Allow the app to forcibly lock the device -->
+        <force-lock />
+        <!-- Allow the app to wipe data (for emergency reset) -->
+        <wipe-data />
+    </uses-policies>
+</device-admin>

@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Required permissions for usage tracking and app blocking -->
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+    
+    <!-- Enhanced permissions from Mindful -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.BIND_QUICK_SETTINGS_TILE"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.BIND_DEVICE_ADMIN"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.BIND_VPN_SERVICE"
+        tools:ignore="ProtectedPermissions" />
+
+    <application
+        android:name=".AwayTimeApplication"
+        android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Awaytime"
+        tools:targetApi="31">
+        
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Awaytime">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name=".ui.settings.AccessibilitySettingsActivity"
+            android:exported="false"
+            android:label="Accessibility Settings"
+            android:theme="@style/Theme.Awaytime" />
+            
+        <activity
+            android:name=".ui.debug.UsageTrackingTestActivity"
+            android:exported="false"
+            android:label="Usage Tracking Test"
+            android:theme="@style/Theme.Awaytime" />
+
+        <activity
+            android:name=".ui.blocking.BlockingActivity"
+            android:exported="false"
+            android:label="App Blocked"
+            android:theme="@style/Theme.AppCompat.Dialog" />
+        
+        <!-- Enhanced Accessibility Service for app blocking (from Mindful) -->
+        <service
+            android:name=".service.AwayTimeAccessibilityService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+        
+        <!-- Device Admin Receiver for tamper protection -->
+        <receiver
+            android:name=".receivers.AwayTimeDeviceAdminReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin_config" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
+        
+        <!-- Broadcast receiver for usage events -->
+        <receiver
+            android:name=".service.UsageEventReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.awaytime.USAGE_WARNING" />
+                <action android:name="com.awaytime.USAGE_LIMIT" />
+                <action android:name="com.awaytime.STREAK_ACHIEVEMENT" />
+            </intent-filter>
+        </receiver>
+        
+        <!-- Broadcast receiver for scheduled notifications -->
+        <receiver
+            android:name=".service.NotificationReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="DAILY_CHECKIN" />
+                <action android:name="WEEKLY_REVIEW" />
+                <action android:name="MOTIVATION" />
+            </intent-filter>
+        </receiver>
+        
+        <!-- Bedtime alarm receiver -->
+        <receiver
+            android:name=".receivers.BedtimeReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        
+        <!-- Enhanced Services from Mindful Integration -->
+        <service
+            android:name=".service.AwayTimeVpnService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse"
+            android:permission="android.permission.BIND_VPN_SERVICE">
+            <intent-filter>
+                <action android:name="android.net.VpnService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.net.VpnService.SUPPORTS_ALWAYS_ON"
+                android:value="false" />
+        </service>
+        
+        <service
+            android:name=".service.AwayTimeNotificationListenerService"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+        
+        <service
+            android:name=".service.AwayTimeFocusSessionService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
+        
+        <!-- Original Foreground Services -->
+        <service
+            android:name=".service.UsageTrackingService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
+            
+        <service
+            android:name=".service.AppBlockingService"
+            android:enabled="true"
+            android:exported="false" />
+            
+        <service
+            android:name=".service.GoalTrackingService"
+            android:enabled="true"
+            android:exported="false" />
+            
+        <service
+            android:name=".service.GamificationService"
+            android:enabled="true"
+            android:exported="false" />
+            
+        <service
+            android:name=".service.NotificationService"
+            android:enabled="true"
+            android:exported="false" />
+            
+        <service
+            android:name=".service.BackgroundReliabilityService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
+            
+        <!-- Firebase Messaging Service -->
+        <service
+            android:name=".service.AwayTimeFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        
+        <!-- Widget Providers -->
+        <receiver
+            android:name=".widgets.UsageSummaryWidget"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_usage_summary_info" />
+        </receiver>
+        
+        <receiver
+            android:name=".widgets.FocusSessionWidget"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.awaytime.widget.START_FOCUS" />
+                <action android:name="com.awaytime.widget.STOP_FOCUS" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_focus_session_info" />
+        </receiver>
+        
+        <receiver
+            android:name=".widgets.BedtimeWidget"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.awaytime.widget.TOGGLE_BEDTIME" />
+                <action android:name="com.awaytime.widget.EMERGENCY_OVERRIDE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_bedtime_info" />
+        </receiver>
+        
+        <receiver
+            android:name=".widgets.QuickToggleWidget"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.awaytime.widget.TOGGLE_BLOCKING" />
+                <action android:name="com.awaytime.widget.TOGGLE_VPN" />
+                <action android:name="com.awaytime.widget.QUICK_FOCUS" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_quick_toggle_info" />
+        </receiver>
+        
+    </application>
+
+</manifest>

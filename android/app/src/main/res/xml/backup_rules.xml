@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- 
+    Awaytime Backup Rules
+    We exclude sensitive user data from backup for privacy protection
+    -->
+    
+    <!-- Exclude sensitive user preferences -->
+    <exclude domain="sharedpref" path="awaytime_analytics" />
+    <exclude domain="sharedpref" path="awaytime_usage_data" />
+    <exclude domain="sharedpref" path="awaytime_user_settings" />
+    
+    <!-- Exclude local analytics events -->
+    <exclude domain="sharedpref" path="local_events" />
+    
+    <!-- Exclude database files containing usage data -->
+    <exclude domain="database" path="awaytime_database" />
+    <exclude domain="database" path="usage_tracking.db" />
+    
+    <!-- Allow backup of non-sensitive app preferences -->
+    <include domain="sharedpref" path="app_preferences" />
+    
+    <!-- Allow backup of theme and UI preferences -->
+    <include domain="sharedpref" path="ui_preferences" />
+</full-backup-content>

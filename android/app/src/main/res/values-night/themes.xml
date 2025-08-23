@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Awaytime Dark Theme -->
+    <style name="Theme.Awaytime" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color (Awaytime Purple) -->
+        <item name="colorPrimary">@color/awaytime_purple</item>
+        <item name="colorPrimaryDark">@color/awaytime_purple</item>
+        <item name="colorPrimaryVariant">@color/awaytime_dark_purple</item>
+        
+        <!-- Secondary colors -->
+        <item name="colorSecondary">@color/awaytime_light_purple</item>
+        <item name="colorSecondaryVariant">@color/awaytime_dark_purple</item>
+        
+        <!-- Background colors -->
+        <item name="android:colorBackground">@color/awaytime_dark_background</item>
+        <item name="colorSurface">@color/awaytime_dark_card_background</item>
+        
+        <!-- Error colors -->
+        <item name="colorError">@color/awaytime_error</item>
+        
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@color/awaytime_dark_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        
+        <!-- Navigation bar -->
+        <item name="android:navigationBarColor">@color/awaytime_dark_background</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        
+        <!-- Window background -->
+        <item name="android:windowBackground">@color/awaytime_dark_background</item>
+        
+        <!-- Text colors for dark mode -->
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/gray_400</item>
+    </style>
+</resources>

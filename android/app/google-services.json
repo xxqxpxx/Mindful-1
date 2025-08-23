@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "434002057239",
+    "project_id": "awaytime-63869",
+    "storage_bucket": "awaytime-63869.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:434002057239:android:c84f08b97340dddbe82452",
+        "android_client_info": {
+          "package_name": "com.awaytime.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEQy5-Z30DCbnoTeOxSw-9_LMltTZLm8k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

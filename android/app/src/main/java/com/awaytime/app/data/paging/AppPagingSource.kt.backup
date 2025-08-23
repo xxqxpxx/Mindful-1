@@ -1,0 +1,169 @@
+package com.awaytime.app.data.paging
+
+import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
+import androidx.paging.PagingSource
+import androidx.paging.PagingState
+import com.awaytime.app.service.AppInfo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+/**
+ * PagingSource for efficient app loading on scroll
+ * Only loads apps when user scrolls to them - Senior Android Engineer approach
+ */
+class AppPagingSource(
+    private val context: Context,
+    private val searchQuery: String = ""
+) : PagingSource<Int, AppInfo>() {
+
+    private val packageManager = context.packageManager
+
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, AppInfo> {
+        return try {
+            val currentPage = params.key ?: 0
+            val pageSize = params.loadSize
+            
+            withContext(Dispatchers.IO) {
+                // Load apps efficiently for this page only
+                val installedApps = getInstalledApps()
+                
+                // Filter and sort efficiently
+                val filteredApps = filterAndSortApps(installedApps, searchQuery)
+                
+                // Get only the apps for this specific page
+                val startIndex = currentPage * pageSize
+                val endIndex = minOf(startIndex + pageSize, filteredApps.size)
+                
+                val pageApps = if (startIndex < filteredApps.size) {
+                    filteredApps.subList(startIndex, endIndex).mapNotNull { appInfo ->
+                        try {
+                            val appName = packageManager.getApplicationLabel(appInfo).toString()
+                            AppInfo(
+                                packageName = appInfo.packageName,
+                                appName = appName,
+                                icon = null, // Icons loaded separately for performance
+                                iconBitmap = null,
+                                isSystemApp = (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+                            )
+                        } catch (e: Exception) {
+                            null // Skip problematic apps
+                        }
+                    }
+                } else {
+                    emptyList()
+                }
+                
+                println("📄 Loaded page $currentPage: ${pageApps.size} apps (${startIndex}-${endIndex} of ${filteredApps.size} total)")
+                
+                LoadResult.Page(
+                    data = pageApps,
+                    prevKey = if (currentPage == 0) null else currentPage - 1,
+                    nextKey = if (endIndex >= filteredApps.size) null else currentPage + 1
+                )
+            }
+        } catch (exception: Exception) {
+            println("❌ Error loading apps page: ${exception.message}")
+            LoadResult.Error(exception)
+        }
+    }
+
+    override fun getRefreshKey(state: PagingState<Int, AppInfo>): Int? {
+        // Return the page closest to the anchor position
+        return state.anchorPosition?.let { anchorPosition ->
+            val anchorPage = state.closestPageToPosition(anchorPosition)
+            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
+        }
+    }
+
+    /**
+     * Get installed apps efficiently - called once and cached
+     */
+    private suspend fun getInstalledApps(): List<ApplicationInfo> {
+        return try {
+            // Get all apps that have a launcher intent (user-facing apps)
+            val launcherIntent = android.content.Intent(android.content.Intent.ACTION_MAIN, null)
+            launcherIntent.addCategory(android.content.Intent.CATEGORY_LAUNCHER)
+            val launcherApps = packageManager.queryIntentActivities(launcherIntent, 0)
+            val launcherPackages = launcherApps.map { it.activityInfo.packageName }.toSet()
+            
+            // Get installed applications
+            val installedApps = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+            
+            // Filter to only user-facing apps
+            installedApps.filter { appInfo ->
+                val isLauncherApp = launcherPackages.contains(appInfo.packageName)
+                val isUserApp = (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) == 0
+                val isUpdatedSystemApp = (appInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0
+                val isNotOurApp = appInfo.packageName != context.packageName
+                val isNotCoreSystem = !isCoreSystemApp(appInfo.packageName)
+                
+                (isLauncherApp || isUserApp || isUpdatedSystemApp) && 
+                isNotOurApp && isNotCoreSystem
+            }
+        } catch (e: Exception) {
+            println("❌ Error getting installed apps: ${e.message}")
+            emptyList()
+        }
+    }
+
+    /**
+     * Filter and sort apps based on search query
+     */
+    private fun filterAndSortApps(apps: List<ApplicationInfo>, query: String): List<ApplicationInfo> {
+        val filteredApps = if (query.isBlank()) {
+            apps
+        } else {
+            apps.filter { appInfo ->
+                try {
+                    val appName = packageManager.getApplicationLabel(appInfo).toString()
+                    appName.contains(query, ignoreCase = true) ||
+                    appInfo.packageName.contains(query, ignoreCase = true)
+                } catch (e: Exception) {
+                    false
+                }
+            }
+        }
+        
+        // Sort by app name for better UX
+        return filteredApps.sortedBy { appInfo ->
+            try {
+                packageManager.getApplicationLabel(appInfo).toString()
+            } catch (e: Exception) {
+                appInfo.packageName
+            }
+        }
+    }
+
+    /**
+     * Check if app is a core system app that shouldn't be shown
+     */
+    private fun isCoreSystemApp(packageName: String): Boolean {
+        val coreSystemApps = setOf(
+            "android",
+            "com.android.systemui",
+            "com.android.launcher",
+            "com.android.launcher3",
+            "com.google.android.inputmethod.latin",
+            "com.android.inputmethod.latin",
+            "com.android.keyguard",
+            "com.android.phone",
+            "com.android.bluetooth",
+            "com.android.nfc",
+            "com.android.providers.contacts",
+            "com.android.providers.media",
+            "com.android.providers.calendar",
+            "com.android.server.telecom",
+            "com.google.android.gms",
+            "com.google.android.gsf",
+            "com.android.packageinstaller",
+            "com.android.permissioncontroller",
+            "com.android.shell",
+            "com.android.externalstorage",
+            "com.android.documentsui",
+            "com.android.printspooler"
+        )
+        return coreSystemApps.contains(packageName)
+    }
+}

@@ -1,0 +1,12 @@
+# Monetization Logic
+
+- Free: 1 app group, 1 daily limit
+- Premium ($9.99/year):
+  - More app groups
+  - Streaks dashboard
+  - Quotes & motivational tips
+  - Schedule-based limits
+
+## Subscriptions
+- Managed via StoreKit
+- Superwall shows upsell

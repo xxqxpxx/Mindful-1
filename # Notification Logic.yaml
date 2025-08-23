@@ -1,0 +1,7 @@
+# Notification Logic
+
+- Local notifications via UNUserNotificationCenter
+- Types:
+  - Warning: “You're at 80% of your daily limit”
+  - Blocked: “Time’s up! Come back tomorrow”
+  - Streak win: “Nice! You stayed under your limit 3 days in a row!”

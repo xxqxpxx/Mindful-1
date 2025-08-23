@@ -1,0 +1,7 @@
+# Common Components
+
+- `UsageRingView`: Circular progress bar
+- `AppListSelectorView`: Shows selectable apps
+- `ConfettiView`: Triggered on success
+- `LimitTimePicker`: Sets usage limit
+- `StreakView`: Shows premium-only streak count

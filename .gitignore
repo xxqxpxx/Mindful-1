@@ -1,0 +1,10 @@
+mindful/
+awaytimeWeb/
+
+# Android build files
+android/build/
+android/app/build/
+
+# iOS build files
+ios/build/
+ios/Pods/

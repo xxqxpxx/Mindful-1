@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Background circle -->
+    <path
+        android:fillColor="@color/awaytime_purple"
+        android:pathData="M54,54m-50,0a50,50 0,1 1,100 0a50,50 0,1 1,-100 0" />
+    
+    <!-- Letter "A" for Awaytime -->
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M54,25L45,50L40,50L50,25L58,25L68,50L63,50L54,25Z" />
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M47,40L61,40L59,45L49,45L47,40Z" />
+    
+    <!-- Clock/timer element -->
+    <path
+        android:fillColor="@color/awaytime_light_purple"
+        android:pathData="M54,60m-15,0a15,15 0,1 1,30 0a15,15 0,1 1,-30 0"
+        android:strokeColor="@color/white"
+        android:strokeWidth="2" />
+    
+    <!-- Clock hands -->
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M54,52L54,60L60,60"
+        android:strokeColor="@color/white"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+</vector>

@@ -1,0 +1,9 @@
+# App Blocking Logic
+
+- Monitor total usage of app group with DeviceActivity
+- When usage exceeds threshold, call:
+```swift
+store.shield.applications = ShieldSettings.Applications(
+  applicationTokens: selectedAppTokens,
+  exceptedApplicationTokens: []
+)

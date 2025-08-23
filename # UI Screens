@@ -1,0 +1,12 @@
+# UI Screens
+
+- OnboardingView
+- PermissionsView
+- AppGroupSelectionView
+- DashboardView
+- UsageChartView
+- LimitSettingView
+- AlertModalView
+- ConfettiWinView
+- PaywallView
+- PremiumDashboardView

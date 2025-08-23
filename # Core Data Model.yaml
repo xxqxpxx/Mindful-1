@@ -1,0 +1,15 @@
+# Core Data Model
+
+## AppUsage
+- id: UUID
+- appGroup: String
+- date: Date
+- usageMinutes: Int
+- blocked: Bool
+
+## UserGoal
+- id: UUID
+- dailyLimitMinutes: Int
+- appGroup: String
+- streakCount: Int
+- premium: Bool

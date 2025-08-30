@@ -121,17 +121,17 @@ fun AwayTimeNavigation(
         }
 
         composable(Screen.AppSelection.route) {
-            println("🚀 FIXED: Composing App Selection Screen...")
+            println("🚀 PAGING: Composing App Selection Screen with Paging 3...")
             
-            // Clean Mindful app selection screen
+            // Paging version of app selection screen
             AppSelectionScreen(
                 onNavigateBack = { 
                     try {
-                        println("🎯 MINDFUL: Navigate back from app selection")
+                        println("🎯 PAGING: Navigate back from app selection")
                         navController.popBackStack()
-                        println("✅ MINDFUL: Navigation back completed")
+                        println("✅ PAGING: Navigation back completed")
                     } catch (e: Exception) {
-                        println("❌ MINDFUL: Navigation back error: ${e.message}")
+                        println("❌ PAGING: Navigation back error: ${e.message}")
                         // Simple fallback
                         navController.navigate(Screen.Dashboard.route) {
                             popUpTo(Screen.AppSelection.route) { inclusive = true }
@@ -139,7 +139,7 @@ fun AwayTimeNavigation(
                     }
                 }
             )
-            println("✅ MINDFUL: App Selection Screen composed successfully!")
+            println("✅ PAGING: App Selection Screen with Paging 3 composed successfully!")
         }
 
         composable(Screen.LimitSetting.route) {

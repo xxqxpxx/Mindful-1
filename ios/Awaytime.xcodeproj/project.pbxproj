@@ -19,9 +19,7 @@
 		A1000032 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000031 /* DashboardViewModel.swift */; };
 		A1000034 /* PermissionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000033 /* PermissionService.swift */; };
 		A1000036 /* GoalTrackingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000035 /* GoalTrackingService.swift */; };
-		A1000079 /* UsageTrackingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000080 /* UsageTrackingService.swift */; };
 		A1000038 /* BrainMascotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000037 /* BrainMascotView.swift */; };
-		A1000081 /* BabyFoxMascot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000082 /* BabyFoxMascot.swift */; };
 		A1000040 /* UserMotivation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000039 /* UserMotivation.swift */; };
 		A1000042 /* BrainHealthIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000041 /* BrainHealthIndicator.swift */; };
 		A1000044 /* UIComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000043 /* UIComponents.swift */; };
@@ -35,6 +33,8 @@
 		A1000060 /* AppGroupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000059 /* AppGroupsView.swift */; };
 		A1000062 /* ThemeCustomizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000061 /* ThemeCustomizationView.swift */; };
 		A1000064 /* AppModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000063 /* AppModels.swift */; };
+		A1000079 /* UsageTrackingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000080 /* UsageTrackingService.swift */; };
+		A1000081 /* BabyFoxMascot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000082 /* BabyFoxMascot.swift */; };
 		E22A6ABE2E4BD32B00A684BF /* DotLottie in Frameworks */ = {isa = PBXBuildFile; productRef = E22A6ABD2E4BD32B00A684BF /* DotLottie */; };
 		E2B501C42E49476200555145 /* FirebaseAI in Frameworks */ = {isa = PBXBuildFile; productRef = E2B501C32E49476200555145 /* FirebaseAI */; };
 		E2B501C62E49476200555145 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = E2B501C52E49476200555145 /* FirebaseAnalytics */; };
@@ -77,9 +77,7 @@
 		A1000031 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
 		A1000033 /* PermissionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionService.swift; sourceTree = "<group>"; };
 		A1000035 /* GoalTrackingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalTrackingService.swift; sourceTree = "<group>"; };
-		A1000080 /* UsageTrackingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageTrackingService.swift; sourceTree = "<group>"; };
 		A1000037 /* BrainMascotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrainMascotView.swift; sourceTree = "<group>"; };
-		A1000082 /* BabyFoxMascot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BabyFoxMascot.swift; sourceTree = "<group>"; };
 		A1000039 /* UserMotivation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMotivation.swift; sourceTree = "<group>"; };
 		A1000041 /* BrainHealthIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrainHealthIndicator.swift; sourceTree = "<group>"; };
 		A1000043 /* UIComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIComponents.swift; sourceTree = "<group>"; };
@@ -93,6 +91,8 @@
 		A1000059 /* AppGroupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupsView.swift; sourceTree = "<group>"; };
 		A1000061 /* ThemeCustomizationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeCustomizationView.swift; sourceTree = "<group>"; };
 		A1000063 /* AppModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModels.swift; sourceTree = "<group>"; };
+		A1000080 /* UsageTrackingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageTrackingService.swift; sourceTree = "<group>"; };
+		A1000082 /* BabyFoxMascot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BabyFoxMascot.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -323,6 +323,7 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+
 /* Begin PBXSourcesBuildPhase section */
 		A1000009 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -413,7 +414,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -470,7 +471,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -486,26 +487,30 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Awaytime/Awaytime.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 88L6MQ99B4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Awaytime/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Awaytime;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSUserTrackingUsageDescription = "Awaytime uses this to provide personalized analytics for your screen time goals.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.awaytime.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ta7.awaytime.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -520,23 +525,25 @@
 				CODE_SIGN_ENTITLEMENTS = Awaytime/Awaytime.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = M8GQ67Z4T4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Awaytime/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Awaytime;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSUserTrackingUsageDescription = "Awaytime uses this to provide personalized analytics for your screen time goals.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.awaytime.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ta7.awaytime.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -554,7 +561,7 @@
 				A1000015 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		A1000011 /* Build configuration list for PBXProject "Awaytime" */ = {
 			isa = XCConfigurationList;
@@ -563,7 +570,7 @@
 				A1000013 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 
@@ -572,8 +579,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/LottieFiles/dotlottie-ios";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.11.0;
 			};
 		};
 		E2B501C22E49476200555145 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {

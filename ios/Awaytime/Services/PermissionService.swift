@@ -9,7 +9,25 @@ class PermissionService: ObservableObject {
     
     init() {
         checkIOSVersionSupport()
-        updateAuthorizationStatus()
+
+        // Check if we have a saved approved status first
+        if let savedStatus = loadSavedPermissionStatus(), savedStatus == .approved {
+            // Verify current status matches saved status
+            if #available(iOS 16.0, *) {
+                let currentStatus = AuthorizationCenter.shared.authorizationStatus
+                if currentStatus == .approved {
+                    authorizationStatus = .approved
+                    needsPermission = false
+                    print("✅ Restored approved permission status from storage")
+                } else {
+                    // Status mismatch, update normally
+                    updateAuthorizationStatus()
+                }
+            }
+        } else {
+            updateAuthorizationStatus()
+        }
+
         setupPermissionMonitoring()
     }
     
@@ -24,8 +42,26 @@ class PermissionService: ObservableObject {
     
     func updateAuthorizationStatus() {
         if #available(iOS 16.0, *) {
-            authorizationStatus = AuthorizationCenter.shared.authorizationStatus
+            let currentStatus = AuthorizationCenter.shared.authorizationStatus
+            let previousStatus = authorizationStatus
+
+            authorizationStatus = currentStatus
             needsPermission = authorizationStatus != .approved
+
+            // Only save if status actually changed
+            if previousStatus != currentStatus {
+                print("📱 Permission status changed: \(previousStatus) -> \(currentStatus)")
+                savePermissionStatus()
+            }
+
+            // Don't show permission sheet if already approved
+            if currentStatus == .approved {
+                needsPermission = false
+                // Add a small delay to ensure UI updates
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.needsPermission = false
+                }
+            }
         } else {
             // For iOS 15, we'll assume permission is needed since FamilyControls
             // has limited support and requires iOS 16+ for full functionality

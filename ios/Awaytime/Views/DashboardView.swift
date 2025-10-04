@@ -1,5 +1,11 @@
 import SwiftUI
 import DeviceActivity // Add this import
+import FamilyControls
+
+// Extension for custom notification names
+extension Notification.Name {
+    static let deviceActivityDataUpdated = Notification.Name("DeviceActivityDataUpdated")
+}
 
 struct DashboardView: View {
     @StateObject private var viewModel = DashboardViewModel()
@@ -13,14 +19,20 @@ struct DashboardView: View {
     @State private var animationScale: CGFloat = 1.0
 
     // Define context and filter for DeviceActivityReport
-    let context: DeviceActivityReport.Context = .totalActivity
+    let context: DeviceActivityReport.Context = DeviceActivityReport.Context(rawValue: "totalActivity") ?? DeviceActivityReport.Context(rawValue: "default")
     var filter: DeviceActivityFilter {
         let now = Date()
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: now)
         let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+        
+        let startComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: startOfDay)
+        let endComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: endOfDay)
+        
         return DeviceActivityFilter(
-            segment: .init(intervalStart: startOfDay, intervalEnd: endOfDay),
+            segment: .daily(
+                during: DateInterval(start: startOfDay, end: endOfDay)
+            ),
             users: .all,
             devices: .all
         )
@@ -68,9 +80,14 @@ struct DashboardView: View {
             .background(AwayTimeColors.background)
             .navigationBarHidden(true)
             .onAppear {
+                // Only show permission sheet if we truly need permission and don't already have it
                 permissionService.updateAuthorizationStatus()
-                if permissionService.needsPermission {
-                    showingPermissionSheet = true
+
+                // Add a small delay to let the permission service properly initialize
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    if permissionService.needsPermission && permissionService.authorizationStatus != .approved {
+                        showingPermissionSheet = true
+                    }
                 }
             }
             .sheet(isPresented: $showingPermissionSheet) {
@@ -187,20 +204,11 @@ struct DashboardView: View {
     // MARK: - Header Section
     private var headerSection: some View {
         VStack(spacing: 16) {
-            // Baby Fox mascot with welcome message (temporarily using fallback)
-            // BabyFoxMascot(
-            //     usagePercent: viewModel.usageProgress * 100,
-            //     size: 120
-            // )
-            // Temporary fallback until Lottie issues are resolved
-            Image(systemName: "cat.fill")
-                .font(.system(size: 60))
-                .foregroundColor(AwayTimeColors.primary)
-                .scaleEffect(animationScale)
-                .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: animationScale)
-                .onAppear {
-                    animationScale = 1.1
-                }
+            // Baby Fox mascot with welcome message
+            BabyFoxMascot(
+                usagePercent: Float(viewModel.usageProgress * 100),
+                size: 120
+            )
             
             VStack(spacing: 8) {
                 Text("Awaytime")
@@ -332,9 +340,9 @@ struct DashboardView: View {
     // MARK: - Action Buttons Section
     private var actionButtonsSection: some View {
         VStack(spacing: 16) {
-            Button(action: {
+            Button {
                 showingAppSelection = true
-            }) {
+            } label: {
                 VStack {
                     ActionButton(
                         title: "Select Apps",
@@ -345,27 +353,19 @@ struct DashboardView: View {
                     if let selection = viewModel.selectedApps.first { // Get the single FamilyActivitySelection
                         VStack(alignment: .leading, spacing: 4) {
                             if !selection.applicationTokens.isEmpty {
-                                ForEach(Array(selection.applicationTokens), id: \.self) { token in
-                                    if let displayName = token.application.localizedDisplayName {
-                                        Label(displayName, systemImage: "app.fill")
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
-                                }
+                                Label("\(selection.applicationTokens.count) apps selected", systemImage: "app.fill")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
                             }
                             if !selection.categoryTokens.isEmpty {
-                                ForEach(Array(selection.categoryTokens), id: \.self) { token in
-                                    Label(token.localizedDisplayName, systemImage: "folder.fill")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
+                                Label("\(selection.categoryTokens.count) categories selected", systemImage: "folder.fill")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
                             }
                             if !selection.webDomainTokens.isEmpty {
-                                ForEach(Array(selection.webDomainTokens), id: \.self) { token in
-                                    Label(token.localizedDisplayName, systemImage: "globe")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
+                                Label("\(selection.webDomainTokens.count) websites selected", systemImage: "globe")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
                             }
                         }
                         .padding(.leading, 10) // Indent slightly for better visual
@@ -380,9 +380,9 @@ struct DashboardView: View {
                 value: viewModel.selectedApps.isEmpty ? "No apps selected" : "\(viewModel.selectedApps.count) apps selected"
             )
             
-            Button(action: {
+            Button {
                 showingLimitSetting = true
-            }) {
+            } label: {
                 ActionButton(
                     title: "Set Daily Limit",
                     subtitle: "Current: \(viewModel.dailyLimitMinutes / 60)h \(viewModel.dailyLimitMinutes % 60)m",
@@ -475,10 +475,10 @@ struct DashboardView: View {
             
             // Debug buttons for testing (remove in production)
             #if DEBUG
-            Button(action: {
+            Button {
                 OnboardingManager.resetOnboarding()
                 coordinator.startOnboarding()
-            }) {
+            } label: {
                 ActionButton(
                     title: "Reset Onboarding",
                     subtitle: "Debug: Show onboarding again",
@@ -751,19 +751,17 @@ struct DashboardErrorView: View {
             }
             
             // Retry button
-            Button(action: onRetry) {
-                Text("Try Again")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 32)
-                    .padding(.vertical, 16)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(AwayTimeColors.primary)
-                    )
-            }
-            .buttonStyle(PlainButtonStyle())
-            .awayTimeHapticFeedback()
+            Button("Try Again", action: onRetry)
+                .font(.headline)
+                .foregroundColor(.white)
+                .padding(.horizontal, 32)
+                .padding(.vertical, 16)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(AwayTimeColors.primary)
+                )
+                .buttonStyle(PlainButtonStyle())
+                .awayTimeHapticFeedback()
             
             Spacer()
         }

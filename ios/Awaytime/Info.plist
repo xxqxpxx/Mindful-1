@@ -2,12 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleDisplayName</key>
-	<string>Awaytime</string>
-	<key>CFBundleName</key>
-	<string>Awaytime</string>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>Awaytime uses this to provide personalized analytics for your screen time goals.</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.ta7.awaytime.app</string>
 	<key>NSFamilyControlsUsageDescription</key>
 	<string>Awaytime needs access to Screen Time to help you track and limit your app usage.</string>
 </dict>

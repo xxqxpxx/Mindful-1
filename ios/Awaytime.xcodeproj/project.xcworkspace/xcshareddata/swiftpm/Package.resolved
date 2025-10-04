@@ -1,5 +1,5 @@
 {
-  "originHash" : "ace6ed935169a679051a61ad59bd61b996d77bbf98b0e53f2cb98b9d8b5104b7",
+  "originHash" : "28164842976241e9e47cec7ad3b69d279a50d1b80f404177bf1a4c810404d031",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/LottieFiles/dotlottie-ios",
       "state" : {
-        "branch" : "main",
-        "revision" : "125db694e14841417882fd4bae0a663512b5469c"
+        "revision" : "b8b3f900a16ad96bce9d3574fc0533a5bd533b74",
+        "version" : "0.11.0"
       }
     },
     {
@@ -78,8 +78,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/grpc-binary.git",
       "state" : {
-        "revision" : "cc0001a0cf963aa40501d9c2b181e7fc9fd8ec71",
-        "version" : "1.69.0"
+        "revision" : "75b31c842f664a0f46a2e590a570e370249fd8f6",
+        "version" : "1.69.1"
       }
     },
     {
@@ -132,8 +132,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-protobuf.git",
       "state" : {
-        "revision" : "102a647b573f60f73afdce5613a51d71349fe507",
-        "version" : "1.30.0"
+        "revision" : "2547102afd04fe49f1b286090f13ebce07284980",
+        "version" : "1.31.1"
       }
     }
   ],
